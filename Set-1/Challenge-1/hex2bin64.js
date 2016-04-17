@@ -1,3 +1,6 @@
+/**
+ * Takes a string
+ */
 var base16To4bitWords = function ( hex ) {
     var base16LookupTable = {
         '0': 0,  '1': 1,  '2': 2,  '3': 3,
@@ -12,13 +15,50 @@ var base16To4bitWords = function ( hex ) {
                     .split('');
 
     var words4Bit = [];
-    for(var i = 0; i < inputB16Chars.length; i++)
+    for(var i = 0; i < inputB16Chars.length; i++){
+        if(base16LookupTable[inputB16Chars[i]] === undefined)
+            throw new TypeError('Charachter ' + inputB16Chars[i] + ' at position ' + i + ' is not a base 16 digit!');
+
         words4Bit.push(base16LookupTable[inputB16Chars[i]]);
+    }
 
     return words4Bit;
 }
 
-var words4BitToBase64String = function ( words ) {
+/**
+ * Takes array of six, four bit words, 
+ * and converts them to an array of four six bit words
+ */
+var processBase64Octet = function( fourBitWordArray ){
+
+    if(fourBitWordArray.length != 6)
+        throw new RangeError('You must give 6 four bit words!');
+
+    var octetTriple = 0;
+    for(var i = 0; i < fourBitWordArray.length; i++){
+        if(15 < fourBitWordArray[i])
+            throw new RangeError('The value ' + fourBitWordArray[i] + ' is bigger than 4bits');
+
+        octetTriple = (octetTriple << 4) + fourBitWordArray[i];
+    }
+
+    var sixBitMask = 63; // 111111
+    var sixBitWordArray = [];
+
+    while(octetTriple > 0){
+        sixBitWordArray.push(octetTriple & sixBitMask);
+        octetTriple = octetTriple >> 6;
+    }
+
+    return sixBitWordArray.reverse();
+
+}
+
+
+/**
+ * Takes array of 6bit words and returns base64 string.
+ */
+var sixBitWordsToBase64Chars = function ( words ) {
     var base64LookupTable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
     var base64String = '';
 
@@ -26,47 +66,50 @@ var words4BitToBase64String = function ( words ) {
         base64String += base64LookupTable[words[i]];
 
     return base64String;
-
 }
-    
-var words4bitTo6Bit = function ( twoLSB, arrayOf4BitBlocks ) {
-    var base64CharArray = [];
 
-    if(twoLSB === undefined){
+/** 
+ * Converts HEX to BASE64
+ */
+var HexToBase64 = function( hex ) {
+    var hexArray = base16To4bitWords(hex);
+    var base64Array = [];
 
-        // Empty array, nothing to convert
-        if(arrayOf4BitBlocks.length === 0)
-            return base64CharArray;
+    var missingOctetBytes = 0;
 
-        //Getting two 4bit words
-        var words = arrayOf4BitBlocks.slice(0,2); 
+    while (hexArray.length > 0) {
+        if(hexArray.length < 6){
+            console.log('Less than 6')
+            if(hexArray.length < 3)
+                missingOctetBytes = 2;
+            else if(hexArray.length < 5)
+                missingOctetBytes = 1;
 
-        // Merging two 4bit words
-        var word6bit = (words[0] << 4) + words[1]; 
+            while(hexArray.length < 6)
+                hexArray.push(0);
+        }
 
-        // Extracting two LSB
-        var firstTwoLSB = (word6bit & 1<<1) + (word6bit & 1<<0);
+        console.log(processBase64Octet(
+                hexArray.slice(0,6)
+        ))
+        base64Array = base64Array.concat(
+            processBase64Octet(
+                hexArray.slice(0,6)
+        ));
 
-        // Shifting right by 2
-        word6bit = word6bit >> 2;
-
-        // Pushing word to an array
-        base64CharArray.push(word6bit)
-
-        // Recursive call
-        base64CharArray.concat(
-            words4bitTo6Bit(firstTwoLSB, arrayOf4BitBlocks.slice(2)));
-
-    }else if(twoLSB && arrayOf4BitBlocks){
-
-        // Merging two LSB and fist item in the array
-        var word6bit = (twoLSB << 4) + arrayOf4BitBlocks[0];
-        base64CharArray.push(word6bit);
-        base64CharArray.concat(
-            words4bitTo6Bit(undefined, arrayOf4BitBlocks.slice(1)))
+        hexArray = hexArray.slice(6);
     }
 
-    return base64CharArray;
-}
+    console.log(base64Array)
+    // Removing `BAD` 6bit words
+    var base64Array = base64Array.slice(0, base64Array.length - missingOctetBytes);
 
-console.log(hexToInt('7e0'))
+    var base64String = sixBitWordsToBase64Chars(base64Array);
+
+    while(missingOctetBytes > 0){
+        base64String += '=';
+        missingOctetBytes--;
+    }
+
+    return base64String;
+}
