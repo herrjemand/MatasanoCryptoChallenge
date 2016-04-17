@@ -43,7 +43,7 @@
             octetTriple = (octetTriple << 4) + fourBitWordArray[i];
         }
 
-        var sixBitMask = 63; // 111111
+        var sixBitMask = 63; // 111111 -> 6 bits mask
         var sixBitWordArray = [];
 
         while(octetTriple > 0){
