@@ -79,7 +79,6 @@ var HexToBase64 = function( hex ) {
 
     while (hexArray.length > 0) {
         if(hexArray.length < 6){
-            console.log('Less than 6')
             if(hexArray.length < 3)
                 missingOctetBytes = 2;
             else if(hexArray.length < 5)
@@ -89,9 +88,6 @@ var HexToBase64 = function( hex ) {
                 hexArray.push(0);
         }
 
-        console.log(processBase64Octet(
-                hexArray.slice(0,6)
-        ))
         base64Array = base64Array.concat(
             processBase64Octet(
                 hexArray.slice(0,6)
@@ -100,7 +96,6 @@ var HexToBase64 = function( hex ) {
         hexArray = hexArray.slice(6);
     }
 
-    console.log(base64Array)
     // Removing `BAD` 6bit words
     var base64Array = base64Array.slice(0, base64Array.length - missingOctetBytes);
 
