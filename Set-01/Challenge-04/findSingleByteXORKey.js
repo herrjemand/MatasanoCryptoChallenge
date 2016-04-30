@@ -8,8 +8,6 @@
      */
     var scorer = function(message, key, id){
         var lookupTable = {'A': true, 'B': true, 'C': true, 'D': true, 'E': true, 'F': true, 'G': true, 'H': true, 'I': true, 'J': true, 'K': true, 'L': true, 'M': true, 'N': true, 'O': true, 'P': true, 'Q': true, 'R': true, 'S': true, 'T': true, 'U': true, 'V': true, 'W': true, 'X': true, 'Y': true, 'Z': true }; // English alphabet
-
-
         var score = {
             'message':       message, // message to score
             'key':           key,     // one char key
@@ -33,6 +31,9 @@
                 score.spaces++;// if Space char
         }
 
+        score.ascii += score.spaces;
+
+
         return score;
     }
 
@@ -53,11 +54,8 @@
         for(var i = 0; i < messages.length; i++){
             var currentScore = scorer(messages[i], String.fromCharCode(65 + i), i);
 
-            // More spaces, and string must have ASCII chars
-            if(currentScore.spaces > winner.spaces && currentScore.ascii > 0)
-                // Spaces must not make more than 1/3 of message
-                if(currentScore.spaces <= currentScore.messageLength / 3)
-                    winner = currentScore;
+            if(winner.ascii < currentScore.ascii)
+                winner = currentScore;
         }
 
         return winner;
