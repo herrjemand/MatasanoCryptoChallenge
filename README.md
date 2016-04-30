@@ -5,7 +5,7 @@ Matasano Crypto Challenge... in JS
     + [x] [Convert hex to base64](https://github.com/herrniemand/MatasanoCryptoChallenge/tree/master/Set-01/Challenge-01)
     + [x] [Fixed XOR](https://github.com/herrniemand/MatasanoCryptoChallenge/tree/master/Set-01/Challenge-02)
     + [x] [Single-byte XOR cipher](https://github.com/herrniemand/MatasanoCryptoChallenge/tree/master/Set-01/Challenge-03)
-    + [ ] [Detect single-character XOR](https://github.com/herrniemand/MatasanoCryptoChallenge/tree/master/Set-01/Challenge-04)
+    + [x] [Detect single-character XOR](https://github.com/herrniemand/MatasanoCryptoChallenge/tree/master/Set-01/Challenge-04)
     + [ ] Implement repeating-key XOR
     + [ ] Break repeating-key XOR
     + [ ] AES in ECB mode
