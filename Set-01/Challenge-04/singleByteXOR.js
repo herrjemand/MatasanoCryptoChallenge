@@ -27,7 +27,7 @@
         });
 
         var messageSpace = [];
-        for(var decChar = 65; decChar < (65 + 26); decChar++){
+        for(var decChar = 48; decChar < 90; decChar++){
             var tempArray = cipherTextCharArray.slice();
             var message = '';
 
